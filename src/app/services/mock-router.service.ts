@@ -12,10 +12,10 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class MockRouterService implements OnDestroy {
-  routerSub: Subscription = Subscription.EMPTY;
-
-  previousUrl: string = '';
-  currentUrl: string = '';
+  private routerSub: Subscription = Subscription.EMPTY;
+  private previousUrl: string = '';
+  private currentUrl: string = '';
+  private previousUrlStack: string[] = [];
 
   constructor(private router: Router) {
     this.routerSub = this.router.events
@@ -24,11 +24,11 @@ export class MockRouterService implements OnDestroy {
         distinctUntilChanged()
       )
       .subscribe((event: NavigationEnd) => {
-        this.previousUrl = this.currentUrl;
-        this.currentUrl = event.url;
-
-        console.info(`Previous Url: ${this.previousUrl}`);
-        console.info(`Current Url: ${this.currentUrl}`);
+        if (this.previousUrl !== event.url) {
+          this.previousUrl = this.currentUrl;
+          this.currentUrl = event.url;
+          this.previousUrlStack.push(this.previousUrl);
+        }
       });
   }
 
@@ -44,6 +44,7 @@ export class MockRouterService implements OnDestroy {
   }
 
   backToPrevious(): Promise<boolean> {
-    return this.navigateByUrl(this.previousUrl);
+    const previousUrlToNavigate = this.previousUrlStack.pop();
+    return this.navigateByUrl(previousUrlToNavigate ?? '');
   }
 }
