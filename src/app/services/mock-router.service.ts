@@ -42,4 +42,8 @@ export class MockRouterService implements OnDestroy {
   ): Promise<boolean> {
     return this.router.navigateByUrl(url, extras);
   }
+
+  backToPrevious(): Promise<boolean> {
+    return this.navigateByUrl(this.previousUrl);
+  }
 }

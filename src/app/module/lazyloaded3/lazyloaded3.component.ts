@@ -13,4 +13,8 @@ export class Lazyloaded3Component {
     const url = module === '1' ? '/lazyloaded1' : '/lazyloaded2';
     this.mockRouterService.navigateByUrl(url);
   }
+
+  backToPrevious(): void {
+    this.mockRouterService.backToPrevious();
+  }
 }
